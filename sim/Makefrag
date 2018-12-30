@@ -57,6 +57,8 @@ $(verilator) $(verilator_debug): export CXXFLAGS := $(CXXFLAGS) $(common_cxx_fla
 $(verilator) $(verilator_debug): export LDFLAGS := $(LDFLAGS) $(common_ld_flags)
 
 $(verilator): $(HEADER) $(DRIVER_CC) $(DRIVER_H) $(midas_cc) $(midas_h)
+	echo " Check DRIVER_CC, $(DRIVER_CC)"
+	echo $(DRIVER_CC)
 	$(MAKE) -C $(simif_dir) verilator PLATFORM=$(PLATFORM) DESIGN=$(DESIGN) \
 	GEN_DIR=$(GENERATED_DIR) DRIVER="$(DRIVER_CC)"
 

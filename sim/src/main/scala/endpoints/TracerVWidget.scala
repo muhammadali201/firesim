@@ -57,6 +57,9 @@ class TracerVWidget(tracerParams: Parameters, num_traces: Int)(implicit p: Param
    // copy from FireSim's SimpleNICWidget, because it should work here too
   val outgoingPCISdat = Module(new SplitSeqQueue)
   val PCIS_BYTES = 64
+	
+  val tFire = io.hPort.toHost.hValid && io.hPort.fromHost.hReady && io.tReset.valid
+
 
   val uint_traces = io.hPort.hBits.traces map (trace => trace.asUInt)
 
@@ -117,5 +120,6 @@ class TracerVWidget(tracerParams: Parameters, num_traces: Int)(implicit p: Param
     }
   }
   attach(outgoingPCISdat.io.deq.valid && !outgoingPCISdat.io.enq.ready, "tracequeuefull", ReadOnly)
+  genROReg(!tFire, "done")
   genCRFile()
 }

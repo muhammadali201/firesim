@@ -46,7 +46,7 @@ $(VERILOG) $(HEADER): $(chisel_srcs) $(timestamps)
 driver_dir = $(firesim_base_dir)/src/main/cc
 DRIVER_H = $(shell find $(driver_dir) -name "*.h")
 DRIVER_CC = $(addprefix $(driver_dir)/, $(addsuffix .cc, \
-	firesim/firesim_top fesvr/firesim_fesvr endpoints/serial endpoints/uart \
+	firesim/firesim_top fesvr/firesim_fesvr endpoints/serial endpoints/uart endpoints/tracerv \
 	firesim/firesim_f1 endpoints/simplenic endpoints/blockdev)) $(RISCV)/lib/libfesvr.a
 
 TARGET_CXX_FLAGS := -I$(driver_dir) -I$(driver_dir)/firesim -I$(RISCV)/include
@@ -79,6 +79,17 @@ ifneq ($(which_disasm),)
         disasm := 3>&1 1>&2 2>&3 | $(which_disasm) $(DISASM_EXTENSION) >
 endif
 
+buildroot-rootfs-test = bbl-vmlinux0
+buildroot-initramfs-test = bbl-vmlinux0-initramfs
+
+run-rootfs-linux: $(addprefix $(output_dir)/, $(addsuffix .out, $(buildroot-rootfs-test) ))
+	@echo; perl -ne 'print "  [$$1] $$ARGV \t$$2\n" if( /\*{3}(.{8})\*{3}(.*)/ || /ASSERTION (FAILED)/i )' $^ /dev/null | perl -ne 'if(/(.*)/){print "$$1\n\n"; exit(1) if eof()}'
+
+run-rootfs-linux-debug: $(addprefix $(output_dir)/, $(addsuffix .vpd, $(buildroot-rootfs-test) ))
+	@echo; perl -ne 'print "  [$$1] $$ARGV \t$$2\n" if( /\*{3}(.{8})\*{3}(.*)/ || /ASSERTION (FAILED)/i )' $^ /dev/null | perl -ne 'if(/(.*)/){print "$$1\n\n"; exit(1) if eof()}'
+
+
+
 $(OUTPUT_DIR)/%.run: $(OUTPUT_DIR)/% $(EMUL)
 	cd $(dir $($(EMUL))) && \
 	./$(notdir $($(EMUL))) $< +sample=$<.sample +max-cycles=$(TIMEOUT_CYCLES) $(COMMON_SIM_ARGS) $(MIDAS_LEVEL_SIM_ARGS) \
@@ -93,4 +104,22 @@ $(OUTPUT_DIR)/%.vpd: $(OUTPUT_DIR)/% $(EMUL)-debug
 	cd $(dir $($(EMUL)_debug)) && \
 	./$(notdir $($(EMUL)_debug)) $< +sample=$<.sample +waveform=$@ +max-cycles=$(TIMEOUT_CYCLES) $(COMMON_SIM_ARGS) $(MIDAS_LEVEL_SIM_ARGS) \
 	$(disasm) $(patsubst %.vpd,%.out,$@) && [ $$PIPESTATUS -eq 0 ]
+
+
+$(OUTPUT_DIR)/bbl-vmlinux0.out:  $(GENERATED_DIR)/bbl-vmlinux0 $(GENERATED_DIR)/rootfs0.ext2 $(EMUL)
+	echo "Inside makefrag/firesim/Makefrag/bbl-vmlinux0.out target"
+	mkdir -p $(OUTPUT_DIR)
+	cd $(dir $($(EMUL))) && \
+	./$(notdir $($(EMUL))) $< +blkdev=rootfs0.ext2  $(COMMON_SIM_ARGS) $(MIDAS_LEVEL_SIM_ARGS) \
+	$(disasm) $@ && [ $$PIPESTATUS -eq 0 ]
+
+
+$(OUTPUT_DIR)/bbl-vmlinux0.vpd:  $(GENERATED_DIR)/bbl-vmlinux0 $(GENERATED_DIR)/rootfs0.ext2  $(EMUL)-debug
+	echo "Inside makefrag/firesim/Makefrag/bbl-vmlinux0.vpd Waveform Generation Target"
+	mkdir -p $(OUTPUT_DIR)
+	cd $(dir $($(EMUL)_debug)) && \
+	./$(notdir $($(EMUL)_debug)) $< +blkdev=rootfs0.ext2 +waveform=$@ $(COMMON_SIM_ARGS) $(MIDAS_LEVEL_SIM_ARGS) \
+	$(disasm) $(patsubst %.vpd,%.out,$@) && [ $$PIPESTATUS -eq 0 ]
+
+
 
