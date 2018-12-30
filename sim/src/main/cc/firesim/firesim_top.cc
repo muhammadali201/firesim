@@ -5,6 +5,7 @@
 #include "endpoints/uart.h"
 #include "endpoints/simplenic.h"
 #include "endpoints/blockdev.h"
+#include "endpoints/tracerv.h"
 // MIDAS-defined endpoints
 #include "endpoints/fpga_model.h"
 #include "endpoints/sim_mem.h"
@@ -85,6 +86,7 @@ firesim_top_t::firesim_top_t(int argc, char** argv, firesim_fesvr_t* fesvr, uint
 
     add_endpoint(new uart_t(this));
     add_endpoint(new serial_t(this, fesvr, fesvr_step_size));
+    add_endpoint(new tracerv_t(this, args, 0));
 
 #ifdef NASTIWIDGET_0
     endpoints.push_back(new sim_mem_t(this, argc, argv));

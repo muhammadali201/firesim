@@ -43,6 +43,11 @@ class WithLargeTLBs extends Config((site, here, up) => {
   ))
 })
 
+class WithTraceRocket extends Config((site, here, up) => {
+   case RocketTilesKey => up(RocketTilesKey, site) map { r => r.copy(trace = true) }
+})
+
+
 class WithPerfCounters extends Config((site, here, up) => {
   case RocketTilesKey => up(RocketTilesKey) map (tile => tile.copy(
     core = tile.core.copy(nPerfCounters = 29)
@@ -80,8 +85,13 @@ class FireSimRocketChipConfig extends Config(
   new WithPerfCounters ++
   new freechips.rocketchip.system.DefaultConfig)
 
+class FireSimRocketChipTracedConfig extends Config(
+  new WithTraceRocket ++ new FireSimRocketChipConfig)
 // single core config
 class FireSimRocketChipSingleCoreConfig extends Config(new FireSimRocketChipConfig)
+
+class FireSimRocketChipSingleCoreTracedConfig extends Config(
+  new WithTraceRocket ++ new FireSimRocketChipSingleCoreConfig)
 
 // dual core config
 class FireSimRocketChipDualCoreConfig extends Config(new WithNBigCores(2) ++

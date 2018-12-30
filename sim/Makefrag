@@ -188,6 +188,18 @@ clean:
 
 veryclean:
 	rm -rf generated-src output
+	rm -rf barstools/macros/target
+	rm -rf barstools/mdf/scalalib/project
+	rm -rf barstools/mdf/scalalib/target
+	rm -rf firrtl/project/target
+	rm -rf firrtl/project/project
+	rm -rf midas/target
+	rm -rf project/target
+	rm -rf project/project
+	rm -rf target
+	rm -f firrtl.timestamp
+	rm -rf target-rtl/firechip/icenet/target
+	rm -rf target-rtl/firechip/boom/target
 
 tags: $(HEADER) $(DRIVER_CC) $(DRIVER_H) $(midas_cc) $(midas_h)
 	ctags -R --exclude=@.ctagsignore .
