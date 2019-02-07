@@ -84,6 +84,8 @@ firesim_top_t::firesim_top_t(int argc, char** argv, firesim_fesvr_t* fesvr, uint
         }
     }
 
+    printf("firesim_f1_t constructor, this pointer = %p,   \n",this);
+    printf("firesim_f1_t constructor, Adding uart, serial widgets   \n");
     add_endpoint(new uart_t(this));
     add_endpoint(new serial_t(this, fesvr, fesvr_step_size));
     add_endpoint(new tracerv_t(this, args, 0));

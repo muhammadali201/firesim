@@ -25,6 +25,7 @@ void sighand(int s) {
 uart_t::uart_t(simif_t* sim): endpoint_t(sim)
 {
 #ifndef _WIN32
+    printf(" uart_t constructor, sim = %p,   \n",sim);
     // Don't block on stdin reads if there is nothing typed in
     fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
 
