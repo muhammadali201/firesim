@@ -72,7 +72,7 @@ void uart_t::tick() {
                 specialchar = 0;
                 readamt = 1;
             } else {
-                // else check if we have input on stdin
+                // else check if we have input on stdin // STDIN_FILENO is same as fileno(stdin). same as stdin, google it for more
                 readamt = ::read(STDIN_FILENO, &inp, 1);
             }
 

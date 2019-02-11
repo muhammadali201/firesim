@@ -15,7 +15,11 @@ class tracerv_t: public endpoint_t
         virtual void tick();
         virtual bool terminate() { return false; }
         virtual int exit_code() { return 0; }
-	virtual bool done() { return read(TRACERVWIDGET_0(done)); }
+        #ifdef TRACERVWIDGET_0
+	       virtual bool done() { return read(TRACERVWIDGET_0(done)); }
+        #else
+           virtual bool done() { return true; }
+        #endif
     private:
        // TRACERVWIDGET_struct * mmio_addrs;
         simif_t* sim;

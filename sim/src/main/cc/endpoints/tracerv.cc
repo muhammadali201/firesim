@@ -84,7 +84,11 @@ void tracerv_t::init() {
 #define HUMAN_READABLE
 
 void tracerv_t::tick() {
-    uint64_t outfull = read(TRACERVWIDGET_0(tracequeuefull));
+    #ifdef TRACERVWIDGET_0
+        uint64_t outfull = read(TRACERVWIDGET_0(tracequeuefull));
+    #else
+        uint64_t outfull = 64;
+    #endif
 
     #define QUEUE_DEPTH 6144
     

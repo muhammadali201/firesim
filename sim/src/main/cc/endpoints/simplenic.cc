@@ -169,14 +169,14 @@ void simplenic_t::tick() {
 
         // we will read/write the min of tokens available / token input capacity
         tokens_this_round = std::min(output_tokens_available, input_token_capacity);
-#ifdef DEBUG_NIC_PRINT
-        niclog_printf("tokens this round: %d\n", tokens_this_round);
-#endif
+        #ifdef DEBUG_NIC_PRINT
+            niclog_printf("tokens this round: %d\n", tokens_this_round);
+        #endif
 
         if (tokens_this_round != SIMLATENCY_BT) {
-#ifdef DEBUG_NIC_PRINT
+        #ifdef DEBUG_NIC_PRINT
             niclog_printf("FAIL: output available %d, input capacity: %d\n", output_tokens_available, input_token_capacity);
-#endif
+        #endif
             return;
         }
 
